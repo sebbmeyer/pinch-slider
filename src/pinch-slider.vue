@@ -66,6 +66,7 @@
                  v-finger:press-move="pressMove"
                  v-finger:double-tap="doubleTap"
                  v-finger:single-tap="singleTap"
+                 v-finger:long-tap="longImgTap"
                  v-on:click="click">
         </div>
     </div>
@@ -263,7 +264,9 @@
                 }
             },
 
-            tap: function () {},
+            tap: function (evt) {
+                this.$emit('on-slide-tap', { evt: evt });
+            },
 
             multipointStart: function (evt) {
                 this.curSlideImg = this.slidesDoms[this.currentIndex - this.currentCacheStartIndex].childNodes[0];
@@ -271,8 +274,9 @@
                 evt.cancelBubble=true;
             },
 
-            longTap: function () {
+            longTap: function (evt) {
                 //console.log('onLongTap');
+                this.$emit('on-slide-long-tap', { evt: evt });
             },
 
             swipe: function (evt) {
@@ -312,14 +316,17 @@
                     return;
                 }
 
-                if(this.currentScale * evt.scale < 1){
+                let scale = evt.scale ? evt.scale : evt.zoom;
+
+                if(this.currentScale * scale < 1){
                     this.curSlideImg.width = window.innerWidth;
                     this.curSlideImg.height = window.innerWidth * this.ratio;
-                }else if(this.currentScale * evt.scale < 10){
-                    this.curSlideImg.width = this.currentScale * evt.scale * window.innerWidth;
-                    this.curSlideImg.height = this.currentScale * evt.scale * window.innerWidth * this.ratio;
+                }else if(this.currentScale * scale < 10){
+                    this.curSlideImg.width = this.currentScale * scale * window.innerWidth;
+                    this.curSlideImg.height = this.currentScale * scale * window.innerWidth * this.ratio;
                 }
-                if(evt.scale < 1) {
+
+                if(scale < 1) {
                     this.curSlideImg.translateX = 0;
                     this.curSlideImg.translateY = 0;
                 }
@@ -332,8 +339,8 @@
             },
 
             pressMove: function (evt) {
-                var range = (this.currentScale - 1)/2 * window.innerWidth;
-                var rangeY = this.currentScale * window.innerWidth * this.ratio/2 -  window.innerHeight / 2;
+                let range = (this.currentScale - 1)/2 * window.innerWidth;
+                let rangeY = this.currentScale * window.innerWidth * this.ratio/2 -  window.innerHeight / 2;
                 if((this.curSlideImg.translateX + evt.deltaX > range || this.curSlideImg.translateX + evt.deltaX < -range)){
                     //若此时放大状态，且滑倒边界，则用户滑动距离很大才会出发滑倒下一张
                     if (this.currentScale >= 1 && Math.abs(evt.deltaX) < 25) {
@@ -359,7 +366,7 @@
             },
 
             doubleTap: function () {
-                if(this.curSlideImg.width == window.innerWidth){
+                if(this.curSlideImg.width === window.innerWidth){
                     new To(this.curSlideImg, 'width', window.innerWidth * 2, 200, this.ease);
                     new To(this.curSlideImg, 'height', window.innerWidth * this.ratio * 2, 200, this.ease, function () {});
                     new To(this.curSlideImg, 'translateX', 0, 200, this.ease, function () {});
@@ -377,8 +384,12 @@
                 if(!this.multipointFlag) {
                     evt.cancelBubble = true;
                     evt.preventDefault();
-                    this.$emit('on-img-tap');
+                    this.$emit('on-img-tap', { evt: evt });
                 }
+            },
+
+            longImgTap: function (evt) {
+                this.$emit('on-img-long-tap', { evt: evt });
             },
 
             click: function (evt) {

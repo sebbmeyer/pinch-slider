@@ -9,7 +9,7 @@ module.exports = {
     output: {
         library: 'PinchSlider',
         libraryTarget: 'umd',
-        path: './dist',
+        path: __dirname + '/dist',
         filename: '[name].min.js'
     },
     module: {
