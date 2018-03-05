@@ -100,12 +100,15 @@
             'loadingImgUrl':{
                 type: String,
                 default: ''
+            },
+            //max number of images in DOM
+            'cachedSize':{
+                type: Number,
+                default: 15
             }
         },
         data: function() {
             return{
-                //max number of images in DOM
-                cachedSize: 15,
                 //cache index in the total slides
                 currentCacheStartIndex:0,
                 currentScale : 1,
