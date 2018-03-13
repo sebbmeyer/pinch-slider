@@ -93,11 +93,18 @@ Here list Props and events on the component
 | slides | Array(default: []) image lists to be loaded. |
 | enablePinch | Boolean(default: true). |
 | currentIndex | Number (default:0) - current image showing |
-| srcKey | String (default:'src') - key for the slider object which contains the image. |
+| srcAtr | String (default:'src') - key for the slider object which contains the image. |
+| thumbAtr | String (default:'thumb') - key for the slider object which contains the thumbnail. |
 | lazyLoad | Boolean (default:false) - if true, the images won't be downloaded until swiped near to them. |
 | loadingImgUrl | String (default:'') - if lazyLoad, the loading image shown before the real image downloaded. |
+| maxCachedSize | Number (defailt:15) - determines the size of images will be hold in cache (if the presentation has big images set this to a lower value) |
+| showThumbnails | Boolean (default:false) - adds a button to view thumbnails |
 | @on-slide-change | function - trigged when the slider changes, passes current index for the callback |
-| @on-img-click | function - trigged when image be clicked, this event cancels bubble|
+| @on-img-click | function - trigged when image be clicked, this event cancels bubble |
+| @on-slide-tap | function - trigged when tapped on slide, returns event |
+| @on-slide-long-tap | function - trigged when long tapped on slide, returns event |
+| @on-img-tap | function - trigged when tapped on image, returns event |
+| @on-img-long-tap | function - trigged when long tapped on image, returns event |
 
 
 # Develop
@@ -111,3 +118,6 @@ $ npm run build
 
 # License
 MIT
+
+clone svg from FontAwesome: https://fontawesome.com/icons/clone?style=regular
+License: https://fontawesome.com/license
