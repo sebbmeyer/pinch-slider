@@ -335,7 +335,7 @@
             },
 
             tap: function (evt) {
-                this.$emit('on-slide-tap', { evt: evt, index: this.currentIndex });
+                this.$emit('on-slide-tap', { evt: evt });
             },
 
             multipointStart: function (evt) {
@@ -346,7 +346,7 @@
 
             longTap: function (evt) {
                 //console.log('onLongTap');
-                this.$emit('on-slide-long-tap', { evt: evt, index: this.currentIndex });
+                this.$emit('on-slide-long-tap', { evt: evt });
             },
 
             swipe: function (evt) {
@@ -457,18 +457,18 @@
                 if(!this.multipointFlag) {
                     evt.cancelBubble = true;
                     evt.preventDefault();
-                    this.$emit('on-img-tap', { evt: evt, index: this.currentIndex });
+                    this.$emit('on-img-tap', { evt: evt });
                 }
             },
 
             longImgTap: function (evt) {
-                this.$emit('on-img-long-tap', { evt: evt, index: this.currentIndex });
+                this.$emit('on-img-long-tap', { evt: evt });
             },
 
             click: function (evt) {
                 //console.log('click');
                 if(!this.multipointFlag) {
-                    this.$emit('on-img-click', { index: this.currentIndex });
+                    this.$emit('on-img-click');
                     evt.cancelBubble = true;
                     evt.preventDefault();
                 }
