@@ -136,6 +136,7 @@
 
     function watch(target, prop, callback) {
         Object.defineProperty(target, prop, {
+            configurable: true,
             get: function () {
                 return this["__" + prop];
             },
