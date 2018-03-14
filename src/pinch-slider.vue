@@ -287,6 +287,9 @@
             },
 
             swipe: function (evt) {
+                console.log('swipe', evt);
+                evt.cancelBubble = true;
+                evt.preventDefault();
                 if(this.currentScale > 1){
                     return;
                 }
@@ -300,9 +303,11 @@
                         this.currIndex--;
                     }
                 }
+                return true;
             },
 
             imageSwipe: function (evt) {
+                console.log('imageSwipe', evt);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             },
