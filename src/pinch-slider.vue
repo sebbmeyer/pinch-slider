@@ -1,5 +1,4 @@
 <style scoped>
-    .pinch-slider,
     .ps-slider{
         white-space: nowrap;
         height:100%;
@@ -45,84 +44,30 @@
         object-fit: contain;
         height:auto;
     }
-    .ps-thumbnails{
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 15vh;
-        overflow: scroll;
-        background-color: rgba(0,0,0,0.5);
-        padding: 10px;
-    }
-    .ps-thumbnail-wrapper {
-        display: inline-block;
-        margin: 0 2%;
-        height: 100%;
-    }
-    .ps-thumbnail-wrapper img{
-        max-width:100%;
-        max-height:100%;
-    }
-    .ps-thumbnail-wrapper .slide-number{
-        width: 100%;
-        font-size: 3em;
-        color: white;
-        text-align: center;
-    }
-    @media screen and (max-width: 576px) {
-        .ps-thumbnails{
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 10vh;
-            overflow: scroll;
-        }
-        .ps-thumbnail-wrapper {
-            display: inline-block;
-            margin: 0 3%;
-        }
-        .ps-thumbnail-wrapper .slide-number{
-            width: 100%;
-            font-size: 3em;
-            color: white;
-            text-align: center;
-        }
-    }
 </style>
 
 <template>
-    <div class="pinch-slider">
-        <div ref="psSlider" class="ps-slider"
-             v-finger:tap="tap"
-             v-finger:long-tap="longTap"
-             v-finger:rotate="rotate"
-             v-finger:swipe="swipe"
-             v-finger:touch-start="touchStart"
-             v-finger:touch-move="touchMove"
-             v-finger:touch-end="touchEnd"
-             v-finger:touch-cancel="touchCancel">
-            <div v-for="(slide,index) in domSlides" class="ps-img-wrapper">
-                <img :width='windowWidth'
-                     :src="(index === 0 || !lazyLoad) ? slide[srcAtr]: loadingImgUrl"
-                     v-finger:multipoint-start="multipointStart"
-                     v-finger:multipoint-end="multipointEnd"
-                     v-finger:pinch="pinch"
-                     v-finger:swipe.stop.prevent="imageSwipe"
-                     v-finger:press-move="pressMove"
-                     v-finger:double-tap="doubleTap"
-                     v-finger:single-tap="singleTap"
-                     v-finger:long-tap="longImgTap"
-                     v-on:click="click">
-            </div>
-        </div>
-        <div ref="psThumbnails" class="ps-thumbnails" v-if="showThumbnails" v-finger:swipe="thumbnailSwipe">
-            <div v-for="(slide, index) in slides" class="ps-thumbnail-wrapper" v-show="showThumbs">
-                <img class="ps-thumbnail"
-                     :src="(slide[thumbAtr] && slide[thumbAtr] !== '') ? slide[thumbAtr] : slide[srcAtr]"
-                     v-on:click="clickThumbnail(index)"
-                >
-                <!--<div class="slide-number">{{ index + 1 }}</div>-->
-            </div>
+    <div class="ps-slider"
+         v-finger:tap="tap"
+         v-finger:long-tap="longTap"
+         v-finger:rotate="rotate"
+         v-finger:swipe="swipe"
+         v-finger:touch-start="touchStart"
+         v-finger:touch-move="touchMove"
+         v-finger:touch-end="touchEnd"
+         v-finger:touch-cancel="touchCancel">
+        <div v-for="(slide,index) in domSlides" class="ps-img-wrapper">
+            <img :width='windowWidth'
+                 :src="(index === 0 || !lazyLoad) ? slide[srcAtr]: loadingImgUrl"
+                 v-finger:multipoint-start="multipointStart"
+                 v-finger:multipoint-end="multipointEnd"
+                 v-finger:pinch="pinch"
+                 v-finger:swipe.stop.prevent="imageSwipe"
+                 v-finger:press-move="pressMove"
+                 v-finger:double-tap="doubleTap"
+                 v-finger:single-tap="singleTap"
+                 v-finger:long-tap="longImgTap"
+                 v-on:click="click">
         </div>
     </div>
 </template>
@@ -134,16 +79,11 @@
 
     export default {
         name: 'pinch-slider',
-
         props: {
             'slides':Array,
             'srcAtr':{
                 type: String,
                 default: 'src'
-            },
-            'thumbAtr':{
-                type: String,
-                default: 'thumb'
             },
             'enablePinch':{
                 type: Boolean,
@@ -162,16 +102,11 @@
                 default: ''
             },
             //max number of images in DOM
-            'maxCachedSize':{
+            'cachedSize':{
                 type: Number,
                 default: 15
-            },
-            'showThumbnails':{
-                type: Boolean,
-                default: true
             }
         },
-
         data: function() {
             return{
                 //cache index in the total slides
@@ -185,14 +120,12 @@
                 swipeFlag: false,
                 windowWidth: window.innerWidth,
                 multipointFlag: 0,
-                showThumbs: true,
-                cachedSize: 15
             }
         },
 
         watch:{
             'slides': function(){
-                this.cachedSize = Math.min(this.slides.length, this.maxCachedSize);
+                this.cachedSize = Math.min(this.slides.length, 15);
                 this.bindTransform();
             },
             'currentCacheStartIndex': function(){
@@ -220,21 +153,21 @@
         methods: {
             bindTransform: function(){
                 if(this.slides.length > 0){
-                    (typeof this.$refs.psSlider.translateX) === "undefined" && Transform(this.$refs.psSlider);
+                    (typeof this.$el.translateX) === "undefined" && Transform(this.$el);
                     setTimeout(function () {
-                        this.slidesDoms = [].slice.call(this.$refs.psSlider.children);
+                        this.slidesDoms = [].slice.call(this.$el.children);
 
                         this.slidesDoms.map((child,index) => {
-                            let $img = child.childNodes[0];
-                            $img.translateX || Transform($img);
-                        });
-
+                            var $img = child.childNodes[0];
+                        $img.translateX || Transform($img);
+                    });
                         if(this.slidesDoms[this.currentIndex - this.currentCacheStartIndex]){
                             this.curSlideImg = this.slidesDoms[this.currentIndex - this.currentCacheStartIndex].childNodes[0];
                             this.ratio = this.curSlideImg.naturalHeight/this.curSlideImg.naturalWidth;
                         }
 
-                        this.$emit('on-slide-change', { id: this.$refs.psSlider.id, index: this.currentIndex, slides: this.slides });
+                        //分发状态
+                        this.$emit('on-slide-change', { id: this.$el.id, index: this.currentIndex, slides: this.slides });
                         this.processCurrentIndexChange();
                     }.bind(this), 0);
                 }
@@ -255,13 +188,13 @@
 
                 //time to swap slides dom cache
                 if(this.currentIndex < this.currentCacheStartIndex + 2 || this.currentIndex > this.currentCacheStartIndex + (this.cachedSize - 2)){
-                    this.cachedSize = Math.min(this.slides.length, this.maxCachedSize);
+                    this.cachedSize = Math.min(this.slides.length, 15);
                     this.currentCacheStartIndex = Math.min(this.slides.length - this.cachedSize, Math.max(0, this.currentIndex - Math.floor(this.cachedSize/2)));
                     if(step === 'next'){
-                        this.$refs.psSlider['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex - 1);
+                        this.$el['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex - 1);
                     }
                     if(step === 'previous'){
-                        this.$refs.psSlider['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex + 1);
+                        this.$el['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex + 1);
                     }
                 }
 
@@ -287,10 +220,10 @@
                 }
 
                 if (!this.swipeFlag) {
-                    this.$refs.psSlider['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex);
+                    this.$el['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex);
                 } else {
                     this.swipeFlag = false;
-                    new To(this.$refs.psSlider, 'translateX', -windowWidth * (this.currentIndex - this.currentCacheStartIndex), 500, this.ease, function () {});
+                    new To(this.$el, 'translateX', -windowWidth * (this.currentIndex - this.currentCacheStartIndex), 500, this.ease, function () {});
                 }
 
                 this.$emit('on-slide-change', { index: this.currentIndex, slides: this.slides });
@@ -350,10 +283,6 @@
             },
 
             swipe: function (evt) {
-                // if it is a thumbnail were we swipe - we use the thumbnailSwipe function
-                if (evt.target.classList.contains('ps-thumbnail')) {
-                    return;
-                }
                 if(this.currentScale > 1){
                     return;
                 }
@@ -416,6 +345,7 @@
                 let range = (this.currentScale - 1)/2 * window.innerWidth;
                 let rangeY = this.currentScale * window.innerWidth * this.ratio/2 -  window.innerHeight / 2;
                 if((this.curSlideImg.translateX + evt.deltaX > range || this.curSlideImg.translateX + evt.deltaX < -range)){
+                    //若此时放大状态，且滑倒边界，则用户滑动距离很大才会出发滑倒下一张
                     if (this.currentScale >= 1 && Math.abs(evt.deltaX) < 25) {
                         //
                     }else{
@@ -473,7 +403,6 @@
                     evt.preventDefault();
                 }
             },
-
             touchStart: function () {
                 //console.log('onTouchStart');
             },
@@ -495,20 +424,6 @@
 
             ease: function (x) {
                 return Math.sqrt(1 - Math.pow(x - 1, 2));
-            },
-
-            toggleThumbnails: function () {
-                console.log('toggleThumbnails');
-                this.showThumbs = !this.showThumbs;
-            },
-            thumbnailSwipe: function () {
-                console.log('thumbnailSwipe');
-            },
-            clickThumbnail: function (index) {
-                console.log('clickThumbnail');
-                this.currentIndex = index;
-                this.$emit('on-slide-change', { id: this.$refs.psSlider.id, index: index, slides: this.slides });
-                this.processCurrentIndexChange();
             }
         },
     }
