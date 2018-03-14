@@ -120,8 +120,7 @@
                 swipeFlag: false,
                 windowWidth: window.innerWidth,
                 multipointFlag: 0,
-                maxCachedSize: 15,
-                currIndex: 0
+                maxCachedSize: 15
             }
         },
 
@@ -133,7 +132,7 @@
             'currentCacheStartIndex': function(){
                 this.bindTransform();
             },
-            'currIndex': function(){
+            'currentIndex': function(){
                 this.processCurrentIndexChange();
             },
             'domSlides': function() {
@@ -151,7 +150,6 @@
         mounted: function(){
             this.bindTransform();
             this.maxCachedSize = this.cachedSize;
-            this.currIndex = this.currentIndex;
         },
 
         methods: {
@@ -165,13 +163,13 @@
                             var $img = child.childNodes[0];
                             $img.translateX || Transform($img);
                         });
-                        if(this.slidesDoms[this.currIndex - this.currentCacheStartIndex]){
-                            this.curSlideImg = this.slidesDoms[this.currIndex - this.currentCacheStartIndex].childNodes[0];
+                        if(this.slidesDoms[this.currentIndex - this.currentCacheStartIndex]){
+                            this.curSlideImg = this.slidesDoms[this.currentIndex - this.currentCacheStartIndex].childNodes[0];
                             this.ratio = this.curSlideImg.naturalHeight/this.curSlideImg.naturalWidth;
                         }
 
                         //分发状态
-                        this.$emit('on-slide-change', { id: this.$el.id, index: this.currIndex, slides: this.slides });
+                        this.$emit('on-slide-change', { id: this.$el.id, index: this.currentIndex, slides: this.slides });
                         this.processCurrentIndexChange();
                     }.bind(this), 0);
                 }
@@ -184,26 +182,26 @@
             },
 
             processCurrentIndexChange: function(){
-                if (this.currIndex < 0) return;
+                if (this.currentIndex < 0) return;
 
                 let windowWidth = document.body.clientWidth;
-                let direction = this.lastIndex < this.currIndex ? "next" : "previous";
-                let step = this.lastIndex === this.currIndex - 1 ? "next" : this.lastIndex === this.currIndex + 1 ? "previous" : "jump";
+                let direction = this.lastIndex < this.currentIndex ? "next" : "previous";
+                let step = this.lastIndex === this.currentIndex - 1 ? "next" : this.lastIndex === this.currentIndex + 1 ? "previous" : "jump";
 
                 //time to swap slides dom cache
-                if(this.currIndex < this.currentCacheStartIndex + 2 || this.currIndex > this.currentCacheStartIndex + (this.maxCachedSize - 2)){
+                if(this.currentIndex < this.currentCacheStartIndex + 2 || this.currentIndex > this.currentCacheStartIndex + (this.maxCachedSize - 2)){
                     this.maxCachedSize = Math.min(this.slides.length, 15);
-                    this.currentCacheStartIndex = Math.min(this.slides.length - this.maxCachedSize, Math.max(0, this.currIndex - Math.floor(this.maxCachedSize/2)));
+                    this.currentCacheStartIndex = Math.min(this.slides.length - this.maxCachedSize, Math.max(0, this.currentIndex - Math.floor(this.maxCachedSize/2)));
                     if(step === 'next'){
-                        this.$el['translateX'] = -windowWidth * (this.currIndex - this.currentCacheStartIndex - 1);
+                        this.$el['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex - 1);
                     }
                     if(step === 'previous'){
-                        this.$el['translateX'] = -windowWidth * (this.currIndex - this.currentCacheStartIndex + 1);
+                        this.$el['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex + 1);
                     }
                 }
 
-                if(this.slidesDoms[this.currIndex - this.currentCacheStartIndex]){
-                    this.curSlideImg = this.slidesDoms[this.currIndex - this.currentCacheStartIndex].childNodes[0];
+                if(this.slidesDoms[this.currentIndex - this.currentCacheStartIndex]){
+                    this.curSlideImg = this.slidesDoms[this.currentIndex - this.currentCacheStartIndex].childNodes[0];
                     this.ratio = this.curSlideImg.naturalHeight/this.curSlideImg.naturalWidth;
                 }
 
@@ -224,18 +222,18 @@
                 }
 
                 if (!this.swipeFlag) {
-                    this.$el['translateX'] = -windowWidth * (this.currIndex - this.currentCacheStartIndex);
+                    this.$el['translateX'] = -windowWidth * (this.currentIndex - this.currentCacheStartIndex);
                 } else {
                     this.swipeFlag = false;
-                    new To(this.$el, 'translateX', -windowWidth * (this.currIndex - this.currentCacheStartIndex), 500, this.ease, function () {});
+                    new To(this.$el, 'translateX', -windowWidth * (this.currentIndex - this.currentCacheStartIndex), 500, this.ease, function () {});
                 }
 
-                this.$emit('on-slide-change', { index: this.currIndex, slides: this.slides });
-                this.lastIndex = this.currIndex;
+                this.$emit('on-slide-change', { index: this.currentIndex, slides: this.slides });
+                this.lastIndex = this.currentIndex;
             },
 
             _lazyLoad: function () {
-                loadImageSrc(this.currIndex - this.currentCacheStartIndex,this);
+                loadImageSrc(this.currentIndex - this.currentCacheStartIndex,this);
                 //load next and previouse
                 function loadImageSrc(index,that) {
                     if(!that.slidesDoms[index] || isNaN(index)){
@@ -276,7 +274,7 @@
             },
 
             multipointStart: function (evt) {
-                this.curSlideImg = this.slidesDoms[this.currIndex - this.currentCacheStartIndex].childNodes[0];
+                this.curSlideImg = this.slidesDoms[this.currentIndex - this.currentCacheStartIndex].childNodes[0];
                 this.ratio = this.curSlideImg.naturalHeight/this.curSlideImg.naturalWidth;
                 evt.cancelBubble=true;
             },
@@ -292,12 +290,12 @@
                 }
                 this.swipeFlag = true;
                 if (evt.direction === 'Left') {
-                    if (this.currIndex < this.slides.length - 1) {
-                        this.currIndex++;
+                    if (this.currentIndex < this.slides.length - 1) {
+                        this.currentIndex++;
                     }
                 }else if (evt.direction === 'Right') {
-                    if (this.currIndex > 0) {
-                        this.currIndex--;
+                    if (this.currentIndex > 0) {
+                        this.currentIndex--;
                     }
                 }
             },
