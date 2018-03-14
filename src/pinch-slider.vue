@@ -168,7 +168,7 @@
             },
             'showThumbnails':{
                 type: Boolean,
-                default: true
+                default: false
             }
         },
 
@@ -185,7 +185,7 @@
                 swipeFlag: false,
                 windowWidth: window.innerWidth,
                 multipointFlag: 0,
-                showThumbs: true,
+                showThumbs: false,
                 cachedSize: 15
             }
         },
@@ -499,7 +499,7 @@
 
             toggleThumbnails: function () {
                 console.log('toggleThumbnails');
-                this.showThumbs = !this.showThumbs;
+//                this.showThumbs = !this.showThumbs;
             },
             thumbnailSwipe: function () {
                 console.log('thumbnailSwipe');
